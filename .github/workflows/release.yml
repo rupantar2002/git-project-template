@@ -1,0 +1,28 @@
+name: Release Workflow
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python for changelog generation (if necessary)
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Run version bump and changelog generation
+        run: |
+          chmod +x ./scripts/update_version.sh
+          chmod +x ./scripts/generate_changelog.sh
+          ./scripts/update_version.sh
+          ./scripts/generate_changelog.sh
+          git add version.txt CHANGELOG.md
+          git commit -m "Update version and changelog"
+          git push
